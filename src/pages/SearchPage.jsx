@@ -1,66 +1,68 @@
 import { useState, useEffect } from "react";
+import MedicineCard from "../components/MedicineCard";
 
 function SearchPage() {
-  const [query, setQuery] = useState("");
-  const [debouncedQuery, setDebouncedQuery] = useState("");
-  const [results, setResults] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+    const [query, setQuery] = useState("");
+    const [debouncedQuery, setDebouncedQuery] = useState("");
+    const [results, setResults] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
 
- useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedQuery(query);
-    }, 500);
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedQuery(query);
+        }, 500);
 
-    return () => clearTimeout(timer); 
-  }, [query]);
+        return () => clearTimeout(timer);
+    }, [query]);
 
-  useEffect(() => {
-    if (debouncedQuery.trim() === "") {
-      setResults([]);
-      return;
-    }
+    useEffect(() => {
+        if (debouncedQuery.trim() === "") {
+            setResults([]);
+            return;
+        }
 
-    setLoading(true);
-    setError(null);
+        setLoading(true);
+        setError(null);
 
-   fetch(`https://api.fda.gov/drug/label.json?search=openfda.brand_name:"${debouncedQuery}"&limit=20`)
-   
-      .then((res) => res.json())
-      .then((data) => {
-        setResults(data.results || []);
-        setLoading(false);
-      })
-      .catch(() => {
-        setError("Something went wrong");
-        setLoading(false);
-      });
-  }, [debouncedQuery]);
+        fetch(`https://api.fda.gov/drug/label.json?search=openfda.brand_name:"${debouncedQuery}"&limit=20`)
 
-  return (
-    <div>
-      <h1>Medicine Search</h1>
+            .then((res) => res.json())
+            .then((data) => {
+                setResults(data.results || []);
+                setLoading(false);
+            })
+            .catch(() => {
+                setError("Something went wrong");
+                setLoading(false);
+            });
+    }, [debouncedQuery]);
 
-      <input
-        type="text"
-        placeholder="Search by brand name..."
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-      />
+    return (
+        <div>
+            <h1>Medicine Search</h1>
 
-      {loading && <p>Loading...</p>}
-      {error && <p>{error}</p>}
-      {!loading && query.trim() !== "" && results.length === 0 && (
-        <p>No results found</p>
-      )}
+            <input
+                type="text"
+                placeholder="Search by brand name..."
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+            />
 
-      <ul>
-        {results.map((item, index) => (
-          <li key={index}>{item.openfda?.brand_name?.[0] || "Unknown"}</li>
-        ))}
-      </ul>
-    </div>
-  );
+            {loading && <p>Loading...</p>}
+            {error && <p>{error}</p>}
+            {!loading && query.trim() !== "" && results.length === 0 && (
+                <p>No results found</p>
+            )}
+
+            <div>
+                {results.map((item, index) => (
+                    <MedicineCard key={index} medicine={item} />
+                ))}
+            </div>
+            
+        </div>
+    );
 }
 
 export default SearchPage;
