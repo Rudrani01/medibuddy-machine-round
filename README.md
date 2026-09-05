@@ -1,16 +1,26 @@
-# React + Vite
+# Medicine Search Application
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Search medicines by brand name using the FDA drug label API.
 
-Currently, two official plugins are available:
+Live link: https://medibuddy-machine-round.netlify.app/
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## How to run
 
-## React Compiler
+```bash
+npm install
+npm run dev
+```
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## What I built
 
-## Expanding the ESLint configuration
+- Search by brand name with debouncing
+- Result cards showing brand name, generic name, manufacturer, type, and route
+- Detail page for each medicine, works on direct visit/refresh
+- Caching to avoid re-fetching the same search
+- Request cancellation so old responses don't overwrite new ones
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Trade-offs
+
+- Focused more on functionality than styling, so the UI is simple
+- Search results reset when going back from the detail page — would fix with more time
+- Skipped useMemo since nothing in the app actually needed it
