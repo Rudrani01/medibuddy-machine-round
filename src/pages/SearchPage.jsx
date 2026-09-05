@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import MedicineCard from "../components/MedicineCard";
 
 function SearchPage() {
@@ -7,6 +7,8 @@ function SearchPage() {
     const [results, setResults] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+
+    const cache = useRef({});
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -22,21 +24,36 @@ function SearchPage() {
             return;
         }
 
+        if (cache.current[debouncedQuery]) {
+            setResults(cache.current[debouncedQuery]);
+            return;
+        }
+
         setLoading(true);
         setError(null);
 
-        fetch(`https://api.fda.gov/drug/label.json?search=openfda.brand_name:"${debouncedQuery}"&limit=20`)
+        const controller = new AbortController();
+
+         fetch(`https://api.fda.gov/drug/label.json?search=openfda.brand_name:"${debouncedQuery}"&limit=20`,
+          { signal: controller.signal }
+        )
 
             .then((res) => res.json())
             .then((data) => {
-                setResults(data.results || []);
+                const fetchedResults = data.results || [];
+                cache.current[debouncedQuery] = fetchedResults;
+                setResults(data.results);
                 setLoading(false);
             })
-            .catch(() => {
-                setError("Something went wrong");
-                setLoading(false);
+            .catch((err) => {
+                if (err.name !== "AbortError") {
+                    setError("Something went wrong");
+                    setLoading(false);
+                }
             });
+        return () => controller.abort();
     }, [debouncedQuery]);
+
 
     return (
         <div>
@@ -51,7 +68,7 @@ function SearchPage() {
 
             {loading && <p>Loading...</p>}
             {error && <p>{error}</p>}
-            {!loading && query.trim() !== "" && results.length === 0 && (
+            {!loading && debouncedQuery.trim() !== "" && results.length === 0 && (
                 <p>No results found</p>
             )}
 
@@ -60,7 +77,7 @@ function SearchPage() {
                     <MedicineCard key={index} medicine={item} />
                 ))}
             </div>
-            
+
         </div>
     );
 }
