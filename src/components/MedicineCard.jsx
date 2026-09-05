@@ -6,7 +6,7 @@ function MedicineCard({ medicine }) {
 
   return (
     <Link to={`/medicine/${medicine.id}`} style={{ textDecoration: "none", color: "inherit" }}>
-      <div style={{ border: "1px solid #ccc", padding: "12px", marginBottom: "10px" }}>
+      <div className="medicine-card">
         <h3>{info.brand_name?.[0] || "Unknown brand"}</h3>
         <p>Generic: {info.generic_name?.[0] || "N/A"}</p>
         <p>Manufacturer: {info.manufacturer_name?.[0] || "N/A"}</p>

@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import MedicineCard from "../components/MedicineCard";
+import "../App.css";
 
 function SearchPage() {
     const [query, setQuery] = useState("");
@@ -34,8 +35,8 @@ function SearchPage() {
 
         const controller = new AbortController();
 
-         fetch(`https://api.fda.gov/drug/label.json?search=openfda.brand_name:"${debouncedQuery}"&limit=20`,
-          { signal: controller.signal }
+        fetch(`https://api.fda.gov/drug/label.json?search=openfda.brand_name:"${debouncedQuery}"&limit=20`,
+            { signal: controller.signal }
         )
 
             .then((res) => res.json())
@@ -56,10 +57,12 @@ function SearchPage() {
 
 
     return (
-        <div>
+        <div className="search-page">
+
             <h1>Medicine Search</h1>
 
             <input
+                className="search-input"
                 type="text"
                 placeholder="Search by brand name..."
                 value={query}
@@ -72,7 +75,7 @@ function SearchPage() {
                 <p>No results found</p>
             )}
 
-            <div>
+            <div className="results">
                 {results.map((item, index) => (
                     <MedicineCard key={index} medicine={item} />
                 ))}
